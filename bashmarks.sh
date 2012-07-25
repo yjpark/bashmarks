@@ -52,8 +52,12 @@ function s {
 # jump to bookmark
 function c {
     check_help $1
-    source $SDIRS
-    cd "$(eval $(echo echo $(echo \$DIR_$1)))"
+    if [ -z "$1" ]; then
+        cd ~
+    else
+        source $SDIRS
+        cd "$(eval $(echo echo $(echo \$DIR_$1)))"
+    fi
 }
 
 # print bookmark
