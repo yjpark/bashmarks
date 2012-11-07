@@ -58,6 +58,7 @@ function c {
         source $SDIRS
         cd "$(eval $(echo echo $(echo \$DIR_$1)))"
     fi
+    pwd
 }
 
 # print bookmark
