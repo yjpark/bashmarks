@@ -34,7 +34,7 @@
 
 # setup file to store bookmarks
 if [ ! -n "$SDIRS" ]; then
-    SDIRS=~/.sdirs
+    SDIRS=~/.local/data/.sdirs
 fi
 touch $SDIRS
 
