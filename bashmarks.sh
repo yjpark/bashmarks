@@ -38,6 +38,9 @@ if [ ! -n "$SDIRS" ]; then
 fi
 touch $SDIRS
 
+RED="0;31m"
+GREEN="0;33m"
+
 # save current directory to bookmarks
 function s {
     check_help $1
@@ -56,7 +59,14 @@ function c {
         cd ~
     else
         source $SDIRS
-        cd "$(eval $(echo echo $(echo \$DIR_$1)))"
+        targe="$(eval $(echo echo $(echo \$DIR_$1)))"
+        if [ -d "$target" ]; then
+            cd "$target"
+        elif [ ! -n "$target" ]; then
+            echo -e "\033[${RED}WARNING: '${1}' bashmark does not exist\033[00m"
+        else
+            echo -e "\033[${RED}WARNING: '${target}' does not exist\033[00m"
+        fi
     fi
     pwd
 }
@@ -97,7 +107,7 @@ function l {
     source $SDIRS
         
     # if color output is not working for you, comment out the line below '\033[1;32m' == "red"
-    env | sort | awk '/DIR_.+/{split(substr($0,5),parts,"="); printf("\033[1;31m%-20s\033[0m %s\n", parts[1], parts[2]);}'
+    env | sort | awk '/DIR_.+/{split(substr($0,5),parts,"="); printf("\033[0;33m%-20s\033[0m %s\n", parts[1], parts[2]);}'
     
     # uncomment this line if color output is not working with the line above
     # env | grep "^DIR_" | cut -c5- | sort |grep "^.*=" 
