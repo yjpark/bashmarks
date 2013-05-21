@@ -32,11 +32,20 @@
 # d [TAB] - tab completion is available
 # l - list all bookmarks
 
+function ssource {
+    ns=(`cut -f1 -d' ' $1`)
+    ds=(`cut -f2 -d' ' $1`)
+    for ((i = 0; i < ${#ns[@]}; i++)); do
+        export ${ns[i]}=${ds[i]}
+    done
+}
+
 # setup file to store bookmarks
 if [ ! -n "$SDIRS" ]; then
-    SDIRS=~/.local/data/.sdirs
+    SDIRS=~/.sdirs
 fi
 touch $SDIRS
+ssource $SDIRS
 
 RED="0;31m"
 GREEN="0;33m"
@@ -46,9 +55,9 @@ function s {
     check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
-        _purge_line "$SDIRS" "export DIR_$1="
-        CURDIR=$(echo $PWD| sed "s#^$HOME#\$HOME#g")
-        echo "export DIR_$1=\"$CURDIR\"" >> $SDIRS
+        _purge_line "$SDIRS" "DIR_$1"
+# use full paths
+        echo "DIR_$1" `pwd` >> $SDIRS
     fi
 }
 
@@ -58,8 +67,8 @@ function c {
     if [ -z "$1" ]; then
         cd ~
     else
-        source $SDIRS
-        targe="$(eval $(echo echo $(echo \$DIR_$1)))"
+        ssource $SDIRS
+        target="$(eval $(echo echo $(echo \$DIR_$1)))"
         if [ -d "$target" ]; then
             cd "$target"
         elif [ ! -n "$target" ]; then
@@ -74,7 +83,7 @@ function c {
 # print bookmark
 function p {
     check_help $1
-    source $SDIRS
+    ssource $SDIRS
     echo "$(eval $(echo echo $(echo \$DIR_$1)))"
 }
 
@@ -83,7 +92,7 @@ function d {
     check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
-        _purge_line "$SDIRS" "export DIR_$1="
+        _purge_line "$SDIRS" "DIR_$1"
         unset "DIR_$1"
     fi
 }
@@ -94,6 +103,7 @@ function check_help {
         echo ''
         echo 's <bookmark_name> - Saves the current directory as "bookmark_name"'
         echo 'c <bookmark_name> - Goes (cd) to the directory associated with "bookmark_name"'
+        echo 'c                 - Go to \$HOME directory (cd ~)'
         echo 'p <bookmark_name> - Prints the directory associated with "bookmark_name"'
         echo 'd <bookmark_name> - Deletes the bookmark'
         echo 'l                 - Lists all available bookmarks'
@@ -104,18 +114,19 @@ function check_help {
 # list bookmarks with dirnam
 function l {
     check_help $1
-    source $SDIRS
+    ssource $SDIRS
         
     # if color output is not working for you, comment out the line below '\033[1;32m' == "red"
-    env | sort | awk '/DIR_.+/{split(substr($0,5),parts,"="); printf("\033[0;33m%-20s\033[0m %s\n", parts[1], parts[2]);}'
+#    env | sort | awk '/DIR_.+/{split(substr($0,5),parts," "); printf("\033[0;33m%-20s\033[0m %s\n", parts[1], parts[2]);}'
     
     # uncomment this line if color output is not working with the line above
-    # env | grep "^DIR_" | cut -c5- | sort |grep "^.*=" 
+    cat $SDIRS | grep "^DIR_" | cut -c5- | sort 
 }
+
 # list bookmarks without dirname
 function _l {
-    source $SDIRS
-    env | grep "^DIR_" | cut -c5- | sort | grep "^.*=" | cut -f1 -d "=" 
+    ssource $SDIRS
+    cat $SDIRS | grep "^DIR_" | cut -c5- | sort 
 }
 
 # validate bookmark name
