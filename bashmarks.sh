@@ -158,12 +158,12 @@ function _purge_line {
 
 # bind completion command for g,p,d to _comp
 if [ $ZSH_VERSION ]; then
-    compctl -K _compzsh g
-    compctl -K _compzsh p
-    compctl -K _compzsh d
+    compctl -K _compzsh gg
+    compctl -K _compzsh bookmark_print
+    compctl -K _compzsh bookmark_delete
 else
     shopt -s progcomp
-    complete -F _comp g
-    complete -F _comp p
-    complete -F _comp d
+    complete -F _comp gg
+    complete -F _comp bookmark_print
+    complete -F _comp bookmark_delete
 fi
