@@ -65,6 +65,7 @@ function bookmark-save {
 function gg {
     check_help $1
     if [ -z "$1" ]; then
+        bookmark-list
         cd ~
     else
         ssource $SDIRS
@@ -115,12 +116,12 @@ function check_help {
 function bookmark-list {
     check_help $1
     ssource $SDIRS
-        
+
     # if color output is not working for you, comment out the line below '\033[1;32m' == "red"
 #    env | sort | awk '/DIR_.+/{split(substr($0,5),parts," "); printf("\033[0;33m%-20s\033[0m %s\n", parts[1], parts[2]);}'
-    
+
     # uncomment this line if color output is not working with the line above
-    cat $SDIRS | grep "^DIR_" | cut -c5- | sort 
+    cat $SDIRS | sort | awk '/DIR_.+/{split(substr($0,5),parts," "); printf("\033[0;33m%-20s\033[0m %s\n", parts[1], parts[2]);}'
 }
 
 # list bookmarks without dirname
