@@ -32,12 +32,15 @@
 # d [TAB] - tab completion is available
 # l - list all bookmarks
 
-function ssource {
-    ns=(`cut -f1 -d' ' $1`)
-    ds=(`cut -f2 -d' ' $1`)
-    for ((i = 0; i < ${#ns[@]}; i++)); do
-        export ${ns[i]}=${ds[i]}
-    done
+function ssource () {
+    while read line; do
+        if [ ${#line} -eq 0 ]; then
+            break
+        fi
+        a=`echo $line | cut -f1 -d' '`
+        b=`echo $line | cut -f2 -d' '`
+        export $a=$b
+    done < $1
 }
 
 # setup file to store bookmarks
@@ -51,7 +54,7 @@ RED="0;31m"
 GREEN="0;33m"
 
 # save current directory to bookmarks
-function bookmark-save {
+function s {
     check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
@@ -62,7 +65,7 @@ function bookmark-save {
 }
 
 # jump to bookmark
-function gg {
+function c {
     check_help $1
     if [ -z "$1" ]; then
         cd ~
@@ -81,14 +84,14 @@ function gg {
 }
 
 # print bookmark
-function bookmark-print {
+function p {
     check_help $1
     ssource $SDIRS
     echo "$(eval $(echo echo $(echo \$DIR_$1)))"
 }
 
 # delete bookmark
-function bookmark-delete {
+function d {
     check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
@@ -112,7 +115,7 @@ function check_help {
 }
 
 # list bookmarks with dirnam
-function bookmark-list {
+function l {
     check_help $1
     ssource $SDIRS
         
@@ -174,12 +177,12 @@ function _purge_line {
 
 # bind completion command for c,p,d to _comp
 if [ $ZSH_VERSION ]; then
-    compctl -K _compzsh gg
-    compctl -K _compzsh bookmark_print
-    compctl -K _compzsh bookmark_delete
+    compctl -K _compzsh c
+    compctl -K _compzsh p
+    compctl -K _compzsh d
 else
     shopt -s progcomp
-    complete -F _comp gg
-    complete -F _comp bookmark_print
-    complete -F _comp bookmark_delete
+    complete -F _comp c
+    complete -F _comp p
+    complete -F _comp d
 fi
