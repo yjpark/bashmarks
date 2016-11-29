@@ -127,7 +127,7 @@ function bookmark-list {
 # list bookmarks without dirname
 function _l {
     ssource $SDIRS
-    cat $SDIRS | grep "^DIR_" | cut -c5- | sort 
+    cat $SDIRS | sort | awk '/DIR_.+/{split(substr($0,5),parts," "); printf("\033[0;33m%-20s\033[0m %s\n", parts[1], parts[2]);}'
 }
 
 # validate bookmark name
