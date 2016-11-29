@@ -121,7 +121,7 @@ function bookmark-list {
 #    env | sort | awk '/DIR_.+/{split(substr($0,5),parts," "); printf("\033[0;33m%-20s\033[0m %s\n", parts[1], parts[2]);}'
 
     # uncomment this line if color output is not working with the line above
-    cat $SDIRS | sort | awk '/DIR_.+/{split(substr($0,5),parts," "); printf("\033[0;33m%-20s\033[0m %s\n", parts[1], parts[2]);}'
+    grep "^DIR_" | cut -c5- | sort
 }
 
 # list bookmarks without dirname
